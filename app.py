@@ -6,9 +6,9 @@ app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션
 api = Api(app)  # Flask 객체에 Api 객체 등록
 
 
-@api.route('/motion/<string:name>', methods=['GET'])
+@api.route('/motion/<string:name>', methods=['POST'])
 class motion(Resource):
-    def get(self, name):
+    def post(self, name):
         content = request.json
         print(content)
 
@@ -18,13 +18,13 @@ class motion(Resource):
         return {'result' : "%s!" % combined} 
 
 
-@api.route('/photo', methods = ['GET'])
+@api.route('/photo', methods = ['POST'])
 class photo(Resource):
-    def get(self):
+    def post(self):
 
-        global words
+        # words = request.json.get('words')
 
-        words = request.json.get('words')
+        words = ['안녕', '감사', '인사']
 
         return {
             "words": words
@@ -33,5 +33,5 @@ class photo(Resource):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
-    # 테스트할때는 127.0.0.1, app.debug = True
+    app.run(host='127.0.0.1', port=5000, debug=True) # 배포는 5000
+    # 테스트할때는 127.0.0.1, debug = True
