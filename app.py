@@ -12,7 +12,7 @@ from urllib.parse import unquote_plus
 
 
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
-app.config['JSON_AS_ASCII'] = False
+app.config['JSON_AS_ASCII'] = False # 한글깨짐 방지
 api = Api(app)  # Flask 객체에 Api 객체 등록
 
 __all__ = ["split_syllable_char", "split_syllables",
@@ -236,10 +236,7 @@ class motion(Resource):
 
         combined = join_jamos(word) # 자, 모음 결합  
 
-        result = json.dumps(combined, ensure_ascii=False) # unicode -> 한글
-        res = make_response(result)
-        
-        return res
+        return {'result' : "%s" % combined} 
 
 
 @api.route('/photo', methods = ['POST'])
