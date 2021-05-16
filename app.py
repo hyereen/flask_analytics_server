@@ -1,9 +1,18 @@
-from flask import Flask, request, json, request, jsonify  # 서버 구현을 위한 Flask 객체 import
+# _*_ coding: utf-8 _*_
+
+from flask import Flask, request, json, request, jsonify, make_response  # 서버 구현을 위한 Flask 객체 import
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
 from jamo import h2j, j2hcj # 자모음 결합
+import urllib.request 
+import urllib.parse
+import urllib 
+from urllib.parse import quote_plus 
+from urllib.parse import unquote_plus
+
 
 
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
+app.config['JSON_AS_ASCII'] = False
 api = Api(app)  # Flask 객체에 Api 객체 등록
 
 __all__ = ["split_syllable_char", "split_syllables",
@@ -223,9 +232,14 @@ def join_jamos(s, ignore_err=True):
 class motion(Resource):
     def get(self, word):
 
+        word = unquote_plus(word) # ascii -> 한글
+
         combined = join_jamos(word) # 자, 모음 결합  
 
-        return combined
+        result = json.dumps(combined, ensure_ascii=False) # unicode -> 한글
+        res = make_response(result)
+        
+        return res
 
 
 @api.route('/photo', methods = ['POST'])
@@ -244,5 +258,5 @@ class photo(Resource):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000) # 배포는 5000
+    app.run(host='127.0.0.1', debug = True, port=5000) # 배포는 5000
     # 테스트할때는 '127.0.0.1', debug = True,
