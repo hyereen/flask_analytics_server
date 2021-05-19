@@ -8,6 +8,10 @@ import urllib.parse
 import urllib 
 from urllib.parse import quote_plus 
 from urllib.parse import unquote_plus
+import pytesseract
+import cv2
+import os
+from PIL import Image
 
 
 
@@ -242,18 +246,36 @@ class motion(Resource):
 @api.route('/photo', methods = ['POST'])
 class photo(Resource):
     def post(self):
+        img = request.files['img']
+        img.save("img.jpg") # img파일 로컬에 저장
+        # image = cv2.imread(img)
+        #image = img
 
-        # words = request.json.get('words')
+        # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
+        #pytesseract에서는 numpy array를 읽지 못하고 file을 읽기 때문에 os로 파일을 불러들여야 한다.
+        #filename = "{}.jpg".format(os.getpid())
+        #filename = img.filename
+        # cv2.imwrite(filename, gray)
+
+        text = pytesseract.image_to_string(Image.open(img), lang='kor')
+        #os.remove(filename)
+
+        print(text)
+
+        # 명사 동사 추출 
         words = ['안녕', '감사', '인사']
 
-
         return {
-            "words": words
+            "result": text,
+            "words": words 
         }
 
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000) # 배포는 5000
+    # Setup Tesseract executable path
+    #pytesseract.pytesseract.tesseract_cmd = r'C:\Users\KHR\Desktop\fla-server\tesseract-ocr-w64-setup-v5.0.0-alpha.20210506.exe'
+
+    app.run(host='127.0.0.1', debug = True, port=5000) # 배포는 5000
     # 테스트할때는 '127.0.0.1', debug = True,
