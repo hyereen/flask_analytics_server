@@ -277,5 +277,5 @@ if __name__ == "__main__":
     # Setup Tesseract executable path
     #pytesseract.pytesseract.tesseract_cmd = r'C:\Users\KHR\Desktop\fla-server\tesseract-ocr-w64-setup-v5.0.0-alpha.20210506.exe'
 
-    app.run(host='127.0.0.1', debug = True, port=5000) # 배포는 5000
+    app.run(host='0.0.0.0', port=5000) # 배포는 5000
     # 테스트할때는 '127.0.0.1', debug = True,
