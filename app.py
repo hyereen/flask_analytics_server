@@ -12,6 +12,7 @@ import pytesseract
 import cv2
 import os
 from PIL import Image
+from konlpy.tag import *
 
 
 
@@ -250,19 +251,40 @@ class photo(Resource):
 
         text = pytesseract.image_to_string(Image.open(img), lang='kor')
 
-        # 명사 동사 추출 
-        words = ['안녕', '감사', '인사']
+        okt = Okt() # 형태소 분석기
+        text2 = text.rstrip('\n') # 줄바꿈 없애기
+        pos = okt.pos("\n".join([s for s in text2.split("\n") if s]))
+
+        noun = [] # 명사
+        verb = [] # 동사
+        adjective = [] # 형용사
+
+        # 명사, 동사, 형용사 추출
+
+        for i in range(len(pos)):
+            if pos[i][1] == 'Noun':
+                noun.append(pos[i][0])
+
+            if pos[i][1] == 'Verb':
+                verb.append(pos[i][0])
+
+            if pos[i][1] == 'Adjective':
+                adjective.append(pos[i][0])
+
+        # 중복 제거
+        result_noun = list(set(noun))
+        result_verb = list(set(verb))
+        result_adjective = list(set(adjective))
+
+        words = result_noun + result_verb + result_adjective
 
         return {
             "result": text,
-            "words": words 
+            "words": words
         }
 
 
 
 if __name__ == "__main__":
-    # Setup Tesseract executable path
-    #pytesseract.pytesseract.tesseract_cmd = r'C:\Users\KHR\Desktop\fla-server\tesseract-ocr-w64-setup-v5.0.0-alpha.20210506.exe'
-
     app.run(host='0.0.0.0', port=5000) # 배포는 5000
     # 테스트할때는 '127.0.0.1', debug = True,
